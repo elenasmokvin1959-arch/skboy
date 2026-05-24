@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Солёный Мальчик | Админ панель</title>
-  <link rel="stylesheet" href="styles.css?v=3">
+  <link rel="stylesheet" href="styles.css?v=4">
 </head>
 <body class="admin-body">
   <main class="admin-layout">
@@ -32,6 +32,7 @@
         <button class="tab-btn is-active" data-tab="cards" type="button">Карточки</button>
         <button class="tab-btn" data-tab="groups" type="button">Группы</button>
         <button class="tab-btn" data-tab="hero" type="button">Главная</button>
+        <button class="tab-btn" data-tab="site" type="button">Тексты сайта</button>
         <button class="tab-btn" data-tab="chats" type="button">Контакты</button>
         <button class="tab-btn" data-tab="reviews" type="button">Отзывы</button>
         <button class="tab-btn" data-tab="news" type="button">Новости</button>
@@ -57,7 +58,30 @@
             <label><span>Описание</span><textarea id="heroDescriptionInput" rows="5"></textarea></label>
             <label><span>Лого</span><input id="heroLogoInput" type="text"></label>
             <label><span>Видео</span><input id="heroVideoInput" type="text"></label>
+            <label><span>Загрузить лого</span><input id="heroLogoFile" type="file" accept="image/*"></label>
+            <label><span>Загрузить видео</span><input id="heroVideoFile" type="file" accept="video/*"></label>
+            <label><span>Текст первой кнопки</span><input id="heroPrimaryTextInput" type="text"></label>
+            <label><span>Ссылка первой кнопки</span><input id="heroPrimaryUrlInput" type="text"></label>
+            <label><span>Текст второй кнопки</span><input id="heroSecondaryTextInput" type="text"></label>
+            <label><span>Ссылка второй кнопки</span><input id="heroSecondaryUrlInput" type="text"></label>
             <button class="btn primary" id="saveHero" type="button">Сохранить главную</button>
+          </div>
+        </section>
+
+        <section class="admin-tab" id="tab-site">
+          <div class="admin-head"><div><p class="eyebrow">надписи</p><h1>Тексты блоков</h1></div></div>
+          <div class="panel">
+            <label><span>Маленький текст над переходами</span><input id="linksEyebrowInput" type="text"></label>
+            <label><span>Название переходов</span><input id="linksTitleInput" type="text"></label>
+            <label><span>Маленький текст над группами</span><input id="groupsEyebrowInput" type="text"></label>
+            <label><span>Название групп</span><input id="groupsTitleInput" type="text"></label>
+            <label><span>Маленький текст над контактами</span><input id="contactsEyebrowInput" type="text"></label>
+            <label><span>Название контактов</span><input id="contactsTitleInput" type="text"></label>
+            <label><span>Маленький текст над отзывами</span><input id="reviewsEyebrowInput" type="text"></label>
+            <label><span>Название отзывов на главной</span><input id="reviewsTitleInput" type="text"></label>
+            <label><span>Футер слева</span><input id="footerLeftInput" type="text"></label>
+            <label><span>Футер справа</span><input id="footerRightInput" type="text"></label>
+            <button class="btn primary" id="saveSiteText" type="button">Сохранить тексты</button>
           </div>
         </section>
 
@@ -94,7 +118,7 @@
     </section>
   </main>
 
-  <script src="app.js?v=3"></script>
-  <script src="admin.js?v=3"></script>
+  <script src="app.js?v=4"></script>
+  <script src="admin.js?v=4"></script>
 </body>
 </html>

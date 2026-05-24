@@ -69,6 +69,10 @@
         <div class="admin-fields">
           ${field("Название", item.title, value => item.title = value)}
           ${field("Фото / ссылка / файл", item.image, value => item.image = value)}
+          <label class="wide">
+            <span>Загрузить фото</span>
+            <input data-image-upload="${listName}" data-image-id="${item.id}" type="file" accept="image/*">
+          </label>
           ${area("Описание", item.description, value => item.description = value)}
           ${field("Текст кнопки", item.button, value => item.button = value)}
           ${field("Ссылка перехода", item.url, value => item.url = value, true)}
@@ -150,6 +154,30 @@
     document.getElementById("heroDescriptionInput").value = data.hero.description || "";
     document.getElementById("heroLogoInput").value = data.hero.logo || "avatar.jpg";
     document.getElementById("heroVideoInput").value = data.hero.video || "hero.mp4";
+    document.getElementById("heroPrimaryTextInput").value = data.hero.primaryText || "Вечный бот";
+    document.getElementById("heroPrimaryUrlInput").value = data.hero.primaryUrl || "https://tut.contact/skboy";
+    document.getElementById("heroSecondaryTextInput").value = data.hero.secondaryText || "Мальчик на dnestra.cc";
+    document.getElementById("heroSecondaryUrlInput").value = data.hero.secondaryUrl || "https://t.me/boy_dnestra_bot";
+  }
+
+  function renderSiteText() {
+    if (!data.siteText) data.siteText = {};
+    const defaults = {
+      linksEyebrow: "основное",
+      linksTitle: "Переходы",
+      groupsEyebrow: "где есть мальчик",
+      groupsTitle: "Группы и шапки",
+      contactsEyebrow: "контакты",
+      contactsTitle: "Связь",
+      reviewsEyebrow: "отзывы",
+      reviewsTitle: "Что пишут",
+      footerLeft: "Солёный Мальчик",
+      footerRight: "Защищено Cerber Industries 2026"
+    };
+    Object.entries(defaults).forEach(([key, value]) => {
+      const input = document.getElementById(key + "Input");
+      if (input) input.value = data.siteText[key] || value;
+    });
   }
 
   function renderNews() {
@@ -160,6 +188,7 @@
 
   function renderAll() {
     renderHero();
+    renderSiteText();
     renderCards();
     renderGroups();
     renderChats();
@@ -221,7 +250,27 @@
       title: document.getElementById("heroTitleInput").value,
       description: document.getElementById("heroDescriptionInput").value,
       logo: document.getElementById("heroLogoInput").value || "avatar.jpg",
-      video: document.getElementById("heroVideoInput").value || "hero.mp4"
+      video: document.getElementById("heroVideoInput").value || "hero.mp4",
+      primaryText: document.getElementById("heroPrimaryTextInput").value || "Вечный бот",
+      primaryUrl: document.getElementById("heroPrimaryUrlInput").value || "https://tut.contact/skboy",
+      secondaryText: document.getElementById("heroSecondaryTextInput").value || "Мальчик на dnestra.cc",
+      secondaryUrl: document.getElementById("heroSecondaryUrlInput").value || "https://t.me/boy_dnestra_bot"
+    };
+    saveAndRender();
+  });
+
+  document.getElementById("saveSiteText").addEventListener("click", () => {
+    data.siteText = {
+      linksEyebrow: document.getElementById("linksEyebrowInput").value,
+      linksTitle: document.getElementById("linksTitleInput").value,
+      groupsEyebrow: document.getElementById("groupsEyebrowInput").value,
+      groupsTitle: document.getElementById("groupsTitleInput").value,
+      contactsEyebrow: document.getElementById("contactsEyebrowInput").value,
+      contactsTitle: document.getElementById("contactsTitleInput").value,
+      reviewsEyebrow: document.getElementById("reviewsEyebrowInput").value,
+      reviewsTitle: document.getElementById("reviewsTitleInput").value,
+      footerLeft: document.getElementById("footerLeftInput").value,
+      footerRight: document.getElementById("footerRightInput").value
     };
     saveAndRender();
   });
@@ -268,6 +317,82 @@
       if (review) review.approved = !review.approved;
       saveAndRender();
     }
+  });
+
+  function fileToDataUrl(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.addEventListener("load", () => resolve(String(reader.result || "")));
+      reader.addEventListener("error", reject);
+      reader.readAsDataURL(file);
+    });
+  }
+
+  function resizeImage(file, options = {}) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.addEventListener("error", reject);
+      reader.addEventListener("load", () => {
+        const image = new Image();
+        image.addEventListener("error", reject);
+        image.addEventListener("load", () => {
+          const maxWidth = options.maxWidth || 1100;
+          const maxHeight = options.maxHeight || 900;
+          const quality = options.quality || 0.82;
+          const ratio = Math.min(1, maxWidth / image.width, maxHeight / image.height);
+          const width = Math.max(1, Math.round(image.width * ratio));
+          const height = Math.max(1, Math.round(image.height * ratio));
+          const canvas = document.createElement("canvas");
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext("2d");
+          ctx.fillStyle = "#10231f";
+          ctx.fillRect(0, 0, width, height);
+          ctx.drawImage(image, 0, 0, width, height);
+          resolve(canvas.toDataURL("image/jpeg", quality));
+        });
+        image.src = String(reader.result || "");
+      });
+      reader.readAsDataURL(file);
+    });
+  }
+
+  document.addEventListener("change", event => {
+    const input = event.target;
+    if (!(input instanceof HTMLInputElement)) return;
+    const file = input.files && input.files[0];
+    if (!file) return;
+
+    if (input.id === "heroLogoFile" && file.type.startsWith("image/")) {
+      resizeImage(file, { maxWidth: 500, maxHeight: 500, quality: 0.82 }).then(result => {
+        if (!data.hero) data.hero = {};
+        data.hero.logo = result;
+        document.getElementById("heroLogoInput").value = result;
+        saveAndRender();
+      });
+      return;
+    }
+
+    if (input.id === "heroVideoFile" && file.type.startsWith("video/")) {
+      fileToDataUrl(file).then(result => {
+        if (!data.hero) data.hero = {};
+        data.hero.video = result;
+        document.getElementById("heroVideoInput").value = result;
+        saveAndRender();
+      });
+      return;
+    }
+
+    const listName = input.dataset.imageUpload;
+    const itemId = input.dataset.imageId;
+    if (!listName || !itemId || !file.type.startsWith("image/")) return;
+    const list = getOrderedList(listName);
+    const item = Array.isArray(list) ? list.find(entry => entry.id === itemId) : null;
+    if (!item) return;
+    resizeImage(file, { maxWidth: 1200, maxHeight: 900, quality: 0.82 }).then(result => {
+      item.image = result;
+      saveAndRender();
+    });
   });
 
   store.loadServerData().then(changed => {

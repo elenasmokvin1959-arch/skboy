@@ -20,7 +20,23 @@
       title: "Солёный Мальчик",
       description: "Быстрый вход в бота, контакты оператора и актуальные площадки, где Мальчик снова в строю.",
       logo: "avatar.jpg",
-      video: "hero.mp4"
+      video: "hero.mp4",
+      primaryText: "Вечный бот",
+      primaryUrl: "https://tut.contact/skboy",
+      secondaryText: "Мальчик на dnestra.cc",
+      secondaryUrl: "https://t.me/boy_dnestra_bot"
+    },
+    siteText: {
+      linksEyebrow: "основное",
+      linksTitle: "Переходы",
+      groupsEyebrow: "где есть мальчик",
+      groupsTitle: "Группы и шапки",
+      contactsEyebrow: "контакты",
+      contactsTitle: "Связь",
+      reviewsEyebrow: "отзывы",
+      reviewsTitle: "Что пишут",
+      footerLeft: "Солёный Мальчик",
+      footerRight: "Защищено Cerber Industries 2026"
     },
     cards: [
       { id: cryptoId(), title: "ВЕЧНЫЙ БОТ", description: "Постоянная ссылка на главный вход Солёного Мальчика.", image: "avatar.jpg", button: "Открыть", url: "https://tut.contact/skboy" },
@@ -56,6 +72,7 @@
       password: saved.password || DEFAULT_PASSWORD,
       news: { ...defaults.news, ...(saved.news || {}) },
       hero: { ...defaults.hero, ...(saved.hero || {}) },
+      siteText: { ...defaults.siteText, ...(saved.siteText || {}) },
       cards: normalizeCards(saved),
       groups: Array.isArray(saved.groups) ? saved.groups : clone(defaults.groups),
       chats: Array.isArray(saved.chats) ? saved.chats : clone(defaults.chats),
@@ -157,11 +174,29 @@
     const description = document.getElementById("heroDescription");
     const brandLogo = document.getElementById("brandLogo");
     const heroVideo = document.getElementById("heroVideo");
+    const primaryBtn = document.getElementById("heroPrimaryBtn");
+    const secondaryBtn = document.getElementById("heroSecondaryBtn");
     if (eyebrow) eyebrow.textContent = hero.eyebrow;
     if (title) title.textContent = hero.title;
     if (description) description.textContent = hero.description;
     if (brandLogo) brandLogo.src = hero.logo || defaults.hero.logo;
     if (heroVideo) heroVideo.src = hero.video || defaults.hero.video;
+    if (primaryBtn) {
+      primaryBtn.textContent = hero.primaryText || defaults.hero.primaryText;
+      primaryBtn.href = normalizeUrl(hero.primaryUrl || defaults.hero.primaryUrl);
+    }
+    if (secondaryBtn) {
+      secondaryBtn.textContent = hero.secondaryText || defaults.hero.secondaryText;
+      secondaryBtn.href = normalizeUrl(hero.secondaryUrl || defaults.hero.secondaryUrl);
+    }
+  }
+
+  function renderSiteText(data) {
+    const text = { ...defaults.siteText, ...(data.siteText || {}) };
+    Object.entries(text).forEach(([key, value]) => {
+      const el = document.getElementById(key);
+      if (el) el.textContent = value;
+    });
   }
 
   function renderCards(data) {
@@ -387,6 +422,7 @@
   function renderPublicPage() {
     const data = loadData();
     renderHero(data);
+    renderSiteText(data);
     renderCards(data);
     renderGroups(data);
     renderChats(data);
@@ -400,6 +436,7 @@
   function renderReviewsPage() {
     const data = loadData();
     renderHero(data);
+    renderSiteText(data);
     setupStars();
     setupReviewForm(() => renderReviewsList(loadData()));
     renderReviewsList(data);
