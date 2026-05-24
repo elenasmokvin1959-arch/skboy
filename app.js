@@ -351,7 +351,8 @@
     const rect = origin ? origin.getBoundingClientRect() : null;
     const left = rect ? rect.left : 0;
     const width = rect ? rect.width : window.innerWidth;
-    const top = rect ? rect.top + rect.height * .22 : -18;
+    const documentTop = rect ? rect.top + window.scrollY : 0;
+    const top = rect ? Math.max(96, Math.min(window.innerHeight * 0.54, documentTop + rect.height * .22)) : -18;
     for (let i = 0; i < count; i += 1) {
       const grain = document.createElement("span");
       grain.className = "salt-grain";
