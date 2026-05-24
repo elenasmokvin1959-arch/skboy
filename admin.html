@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Солёный Мальчик | Админ панель</title>
+  <link rel="stylesheet" href="styles.css?v=1">
+</head>
+<body class="admin-body">
+  <main class="admin-layout">
+    <section class="login-panel" id="loginPanel">
+      <div class="panel">
+        <p class="eyebrow">владелец</p>
+        <h1>Вход в админ панель</h1>
+        <p class="muted">Стандартный пароль: <strong>skboy228</strong>. После входа его можно сменить.</p>
+        <label>
+          <span>Пароль</span>
+          <input id="adminPassword" type="password" placeholder="Введите пароль">
+        </label>
+        <button class="btn primary" id="loginBtn" type="button">Войти</button>
+        <a class="btn ghost full" href="index.html">На сайт</a>
+        <p class="form-note" id="loginNotice"></p>
+      </div>
+    </section>
+
+    <section class="admin-panel is-hidden" id="adminPanel">
+      <aside class="admin-sidebar">
+        <a class="brand" href="index.html?owner=1">
+          <span class="brand-mark"><img src="avatar.jpg" alt=""></span>
+          <span><strong>Солёный Мальчик</strong><small>admin</small></span>
+        </a>
+        <button class="tab-btn is-active" data-tab="cards" type="button">Карточки</button>
+        <button class="tab-btn" data-tab="groups" type="button">Группы</button>
+        <button class="tab-btn" data-tab="hero" type="button">Главная</button>
+        <button class="tab-btn" data-tab="chats" type="button">Контакты</button>
+        <button class="tab-btn" data-tab="reviews" type="button">Отзывы</button>
+        <button class="tab-btn" data-tab="news" type="button">Новости</button>
+        <button class="tab-btn" data-tab="settings" type="button">Настройки</button>
+      </aside>
+
+      <div class="admin-content">
+        <section class="admin-tab is-active" id="tab-cards">
+          <div class="admin-head"><div><p class="eyebrow">ссылки</p><h1>Карточки</h1></div><button class="btn primary" id="addCard" type="button">Добавить</button></div>
+          <div class="admin-list" id="cardsAdminList"></div>
+        </section>
+
+        <section class="admin-tab" id="tab-groups">
+          <div class="admin-head"><div><p class="eyebrow">группы</p><h1>Галерея</h1></div><button class="btn primary" id="addGroup" type="button">Добавить</button></div>
+          <div class="admin-list" id="groupsAdminList"></div>
+        </section>
+
+        <section class="admin-tab" id="tab-hero">
+          <div class="admin-head"><div><p class="eyebrow">первый экран</p><h1>Главная</h1></div></div>
+          <div class="panel">
+            <label><span>Маленький текст</span><input id="heroEyebrowInput" type="text"></label>
+            <label><span>Заголовок</span><input id="heroTitleInput" type="text"></label>
+            <label><span>Описание</span><textarea id="heroDescriptionInput" rows="5"></textarea></label>
+            <label><span>Лого</span><input id="heroLogoInput" type="text"></label>
+            <label><span>Видео</span><input id="heroVideoInput" type="text"></label>
+            <button class="btn primary" id="saveHero" type="button">Сохранить главную</button>
+          </div>
+        </section>
+
+        <section class="admin-tab" id="tab-chats">
+          <div class="admin-head"><div><p class="eyebrow">кнопки</p><h1>Контакты</h1></div><button class="btn primary" id="addChat" type="button">Добавить</button></div>
+          <div class="admin-list" id="chatsAdminList"></div>
+        </section>
+
+        <section class="admin-tab" id="tab-reviews">
+          <div class="admin-head"><div><p class="eyebrow">модерация</p><h1>Отзывы</h1></div></div>
+          <div class="admin-list" id="reviewsAdminList"></div>
+        </section>
+
+        <section class="admin-tab" id="tab-news">
+          <div class="admin-head"><div><p class="eyebrow">окно при входе</p><h1>Новости</h1></div></div>
+          <div class="panel">
+            <label class="switch-row"><span>Показывать новости</span><input id="newsEnabled" type="checkbox"></label>
+            <label><span>Заголовок</span><input id="newsTitleInput" type="text"></label>
+            <label><span>Текст</span><textarea id="newsTextInput" rows="7"></textarea></label>
+            <button class="btn primary" id="saveNews" type="button">Сохранить новости</button>
+          </div>
+        </section>
+
+        <section class="admin-tab" id="tab-settings">
+          <div class="admin-head"><div><p class="eyebrow">доступ</p><h1>Настройки</h1></div></div>
+          <div class="panel">
+            <label><span>Новый пароль</span><input id="newPassword" type="text" placeholder="Новый пароль"></label>
+            <button class="btn primary" id="savePassword" type="button">Сменить пароль</button>
+            <button class="btn danger" id="logoutBtn" type="button">Выйти</button>
+            <p class="form-note">Кнопка админки показывается после входа или при открытии сайта через <strong>index.html?owner=1</strong>.</p>
+          </div>
+        </section>
+      </div>
+    </section>
+  </main>
+
+  <script src="app.js?v=1"></script>
+  <script src="admin.js?v=1"></script>
+</body>
+</html>

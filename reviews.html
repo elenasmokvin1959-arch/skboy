@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Солёный Мальчик | Отзывы</title>
+  <link rel="stylesheet" href="styles.css?v=1">
+</head>
+<body>
+  <div class="salt-layer" id="saltLayer" aria-hidden="true"></div>
+  <div class="site-shell">
+    <header class="topbar">
+      <a class="brand" href="index.html" aria-label="Солёный Мальчик">
+        <span class="brand-mark"><img id="brandLogo" src="avatar.jpg" alt=""></span>
+        <span>
+          <strong>Солёный Мальчик</strong>
+          <small>skboy.vip</small>
+        </span>
+      </a>
+      <nav class="top-actions" aria-label="Навигация">
+        <a href="index.html#links">Ссылки</a>
+        <a href="index.html#groups">Группы</a>
+        <a href="reviews.html">Отзывы</a>
+        <a class="admin-link is-hidden" id="adminLink" href="admin.html">Админ</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="section reviews-page">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">отзывы</p>
+            <h1>Отзывы</h1>
+          </div>
+          <div class="review-summary" id="reviewSummary">
+            <strong>0.00</strong>
+            <span>0 отзывов</span>
+          </div>
+        </div>
+
+        <form class="review-form" id="reviewForm">
+          <h3>Оставить отзыв</h3>
+          <label>
+            <span>Telegram логин</span>
+            <input id="reviewLogin" type="text" placeholder="@username" autocomplete="off" required>
+          </label>
+          <label>
+            <span>Отзыв</span>
+            <textarea id="reviewText" rows="5" placeholder="Напишите отзыв" required></textarea>
+          </label>
+          <fieldset class="rating-field">
+            <legend>Оценка</legend>
+            <div class="star-picker" id="starPicker" role="radiogroup" aria-label="Оценка от 1 до 5">
+              <button type="button" class="star is-active" data-rating="1" aria-label="1 звезда">★</button>
+              <button type="button" class="star is-active" data-rating="2" aria-label="2 звезды">★</button>
+              <button type="button" class="star is-active" data-rating="3" aria-label="3 звезды">★</button>
+              <button type="button" class="star is-active" data-rating="4" aria-label="4 звезды">★</button>
+              <button type="button" class="star is-active" data-rating="5" aria-label="5 звезд">★</button>
+            </div>
+          </fieldset>
+          <button class="btn primary" type="submit">Отправить</button>
+          <p class="form-note is-hidden" id="reviewNotice"></p>
+        </form>
+
+        <div class="reviews-list" id="reviewsList"></div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <span>Солёный Мальчик</span>
+      <span>Защищено Cerber Industries 2026</span>
+    </footer>
+  </div>
+
+  <a class="quiet-admin-link" href="admin.html" aria-label="Админ панель" title="Админ панель"></a>
+  <script src="app.js?v=1"></script>
+</body>
+</html>

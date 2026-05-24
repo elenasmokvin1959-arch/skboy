@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Солёный Мальчик | skboy.vip</title>
+  <link rel="stylesheet" href="styles.css?v=1">
+</head>
+<body>
+  <div class="salt-layer" id="saltLayer" aria-hidden="true"></div>
+  <div class="site-shell">
+    <header class="topbar">
+      <a class="brand" href="index.html" aria-label="Солёный Мальчик">
+        <span class="brand-mark"><img id="brandLogo" src="avatar.jpg" alt=""></span>
+        <span>
+          <strong>Солёный Мальчик</strong>
+          <small>skboy.vip</small>
+        </span>
+      </a>
+      <nav class="top-actions" aria-label="Навигация">
+        <a href="#links">Ссылки</a>
+        <a href="#groups">Группы</a>
+        <a href="reviews.html">Отзывы</a>
+        <a class="admin-link is-hidden" id="adminLink" href="admin.html">Админ</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div class="hero-copy">
+          <p class="eyebrow" id="heroEyebrow">вечная визитка</p>
+          <h1 id="heroTitle">Солёный Мальчик</h1>
+          <p id="heroDescription">Быстрый вход в бота, контакты оператора и актуальные площадки, где Мальчик снова в строю.</p>
+          <div class="hero-buttons">
+            <a class="btn primary" href="https://tut.contact/skboy" target="_blank" rel="noopener">Вечный бот</a>
+            <a class="btn ghost" href="https://t.me/boy_dnestra_bot" target="_blank" rel="noopener">Мальчик на dnestra.cc</a>
+          </div>
+        </div>
+        <div class="hero-media">
+          <video id="heroVideo" src="hero.mp4" poster="avatar.jpg" autoplay muted loop playsinline></video>
+        </div>
+      </section>
+
+      <section class="section" id="links">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">основное</p>
+            <h2>Переходы</h2>
+          </div>
+        </div>
+        <div class="card-grid" id="cardGrid"></div>
+      </section>
+
+      <section class="section groups-section" id="groups">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">где есть мальчик</p>
+            <h2>Группы и шапки</h2>
+          </div>
+        </div>
+        <div class="group-gallery" id="groupGallery"></div>
+      </section>
+
+      <section class="section compact" id="contacts">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">контакты</p>
+            <h2>Связь</h2>
+          </div>
+        </div>
+        <div class="chat-list" id="chatList"></div>
+      </section>
+
+      <section class="reviews-section" id="reviews">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">отзывы</p>
+            <h2>Что пишут</h2>
+          </div>
+          <a class="btn ghost" href="reviews.html">Все отзывы</a>
+        </div>
+        <div class="review-ticker" aria-live="polite">
+          <div class="review-track" id="reviewTrack"></div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <span>Солёный Мальчик</span>
+      <span>Защищено Cerber Industries 2026</span>
+    </footer>
+  </div>
+
+  <a class="quiet-admin-link" href="admin.html" aria-label="Админ панель" title="Админ панель"></a>
+
+  <div class="news-overlay is-hidden" id="newsOverlay" role="dialog" aria-modal="true" aria-labelledby="newsTitle">
+    <div class="news-modal">
+      <button class="icon-btn" id="closeNews" type="button" aria-label="Закрыть">×</button>
+      <p class="eyebrow">новости</p>
+      <h2 id="newsTitle">Актуально</h2>
+      <p id="newsText"></p>
+      <button class="btn primary" id="acceptNews" type="button">Понятно</button>
+    </div>
+  </div>
+
+  <script src="app.js?v=1"></script>
+</body>
+</html>

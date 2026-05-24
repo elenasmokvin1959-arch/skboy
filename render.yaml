@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: skboy
+    env: rust
+    plan: free
+    buildCommand: cargo build --release
+    startCommand: ./target/release/skboy-site
+    envVars:
+      - key: ADMIN_PASSWORD
+        value: skboy228
