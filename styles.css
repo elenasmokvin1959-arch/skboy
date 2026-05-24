@@ -72,7 +72,7 @@ input:focus, textarea:focus {
 }
 .salt-grain {
   position: absolute;
-  top: -18px;
+  top: var(--start-y);
   width: var(--size);
   height: var(--size);
   left: var(--x);
@@ -84,7 +84,7 @@ input:focus, textarea:focus {
   animation-delay: var(--delay);
 }
 @keyframes saltFall {
-  from { transform: translate3d(0, -24px, 0) rotate(0deg); }
+  from { transform: translate3d(0, -18px, 0) rotate(0deg); }
   to { transform: translate3d(var(--drift), 112vh, 0) rotate(220deg); }
 }
 
@@ -233,17 +233,46 @@ input:focus, textarea:focus {
   border-color: rgba(143, 207, 142, .44);
   box-shadow: 0 22px 50px rgba(0, 0, 0, .34), 0 0 26px rgba(143, 207, 142, .12);
 }
-.link-card img, .group-card img {
+.link-card img {
   width: 100%;
   aspect-ratio: 16 / 11;
   object-fit: cover;
   background: rgba(255, 255, 255, .04);
 }
+.group-slides {
+  position: relative;
+  aspect-ratio: 16 / 10;
+  background: rgba(255, 255, 255, .04);
+  overflow: hidden;
+}
+.group-slide {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transform: scale(1.02);
+  transition: opacity .55s ease, transform .55s ease;
+}
+.group-slide.is-active {
+  opacity: 1;
+  transform: scale(1);
+}
 .link-card-body, .group-card-body { display: grid; gap: 12px; padding: 16px; }
 .link-card h3, .group-card h3, .review-card strong { margin: 0; }
 .link-card p, .group-card p, .muted, .form-note { color: var(--muted); }
 .link-card p, .group-card p { min-height: 58px; margin: 0; line-height: 1.45; }
-.group-gallery { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.group-gallery { display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; }
+.group-carousel { max-width: 760px; }
+.group-dots { display: flex; gap: 7px; }
+.group-dots span {
+  width: 22px;
+  height: 4px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, .22);
+}
+.group-dots span.is-active { background: var(--amber); }
 .chat-list { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
 .chat-button {
   display: flex;

@@ -24,8 +24,8 @@
     },
     cards: [
       { id: cryptoId(), title: "ВЕЧНЫЙ БОТ", description: "Постоянная ссылка на главный вход Солёного Мальчика.", image: "avatar.jpg", button: "Открыть", url: "https://tut.contact/skboy" },
-      { id: cryptoId(), title: "Мальчик на dnestra.cc", description: "Отдельный бот для перехода на dnestra.cc.", image: "groups-1.jpg", button: "Перейти", url: "https://t.me/boy_dnestra_bot" },
-      { id: cryptoId(), title: "Реклама", description: "Связь по рекламе и размещению.", image: "groups-2.jpg", button: "Написать", url: "https://t.me/BOY_rekl" }
+      { id: cryptoId(), title: "Мальчик на dnestra.cc", description: "Отдельный бот для перехода на dnestra.cc.", image: "avatar.jpg", button: "Перейти", url: "https://t.me/boy_dnestra_bot" },
+      { id: cryptoId(), title: "Реклама", description: "Связь по рекламе и размещению.", image: "avatar.jpg", button: "Написать", url: "https://t.me/BOY_rekl" }
     ],
     groups: [
       { id: cryptoId(), title: "Группы, часть 1", description: "Шапки и площадки, где Мальчик уже отмечен.", image: "groups-1.jpg", button: "Посмотреть", url: "groups-1.jpg" },
@@ -43,7 +43,7 @@
       { id: cryptoId(), login: "@forum_md", text: "Оператор ответил ровно и без лишней суеты.", createdAt: new Date(Date.now() - 183900000).toISOString(), approved: true, rating: 4 },
       { id: cryptoId(), login: "@blackbook", text: "Нормальная визитка, всё видно сразу.", createdAt: new Date(Date.now() - 291300000).toISOString(), approved: true, rating: 5 }
     ],
-    seedVersion: 1
+    seedVersion: 2
   };
 
   function clone(value) {
@@ -56,7 +56,7 @@
       password: saved.password || DEFAULT_PASSWORD,
       news: { ...defaults.news, ...(saved.news || {}) },
       hero: { ...defaults.hero, ...(saved.hero || {}) },
-      cards: Array.isArray(saved.cards) ? saved.cards : clone(defaults.cards),
+      cards: normalizeCards(saved),
       groups: Array.isArray(saved.groups) ? saved.groups : clone(defaults.groups),
       chats: Array.isArray(saved.chats) ? saved.chats : clone(defaults.chats),
       reviews: Array.isArray(saved.reviews) ? saved.reviews.map(review => ({ ...review, rating: Number(review.rating || 5) })) : clone(defaults.reviews),
@@ -70,6 +70,19 @@
     } catch (error) {
       return clone(defaults);
     }
+  }
+
+  function normalizeCards(saved) {
+    if (!Array.isArray(saved.cards)) return clone(defaults.cards);
+    const cards = saved.cards.map(card => ({ ...card }));
+    if (Number(saved.seedVersion || 0) < 2) {
+      cards.forEach((card, index) => {
+        if (index > 0 && (card.image === "groups-1.jpg" || card.image === "groups-2.jpg")) {
+          card.image = "avatar.jpg";
+        }
+      });
+    }
+    return cards;
   }
 
   function saveData(data, password) {
@@ -169,16 +182,44 @@
   function renderGroups(data) {
     const gallery = document.getElementById("groupGallery");
     if (!gallery) return;
-    gallery.innerHTML = data.groups.map(group => `
-      <article class="group-card">
-        <img src="${escapeHtml(group.image)}" alt="${escapeHtml(group.title)}" onerror="this.onerror=null;this.src='groups-1.jpg';">
+    const groups = (data.groups || []).length ? data.groups : defaults.groups;
+    const main = groups[0];
+    gallery.innerHTML = `
+      <article class="group-card group-carousel" data-carousel>
+        <div class="group-slides">
+          ${groups.map((group, index) => `
+            <img class="group-slide ${index === 0 ? "is-active" : ""}" src="${escapeHtml(group.image)}" alt="${escapeHtml(group.title)}" onerror="this.onerror=null;this.src='groups-1.jpg';">
+          `).join("")}
+        </div>
         <div class="group-card-body">
-          <h3>${escapeHtml(group.title)}</h3>
-          <p>${escapeHtml(group.description)}</p>
-          <a class="btn ghost" href="${escapeHtml(normalizeUrl(group.url || group.image))}" target="_blank" rel="noopener">${escapeHtml(group.button || "Открыть")}</a>
+          <h3>${escapeHtml(main.title)}</h3>
+          <p>${escapeHtml(main.description)}</p>
+          <a class="btn ghost" href="${escapeHtml(normalizeUrl(main.url || main.image))}" target="_blank" rel="noopener">${escapeHtml(main.button || "Открыть")}</a>
+          <div class="group-dots" aria-hidden="true">
+            ${groups.map((_, index) => `<span class="${index === 0 ? "is-active" : ""}"></span>`).join("")}
+          </div>
         </div>
       </article>
-    `).join("");
+    `;
+    setupGroupCarousel(gallery);
+  }
+
+  function setupGroupCarousel(root) {
+    const carousel = root.querySelector("[data-carousel]");
+    if (!carousel) return;
+    const slides = [...carousel.querySelectorAll(".group-slide")];
+    const dots = [...carousel.querySelectorAll(".group-dots span")];
+    if (slides.length < 2) return;
+    let active = 0;
+    window.clearInterval(window.skboyGroupTimer);
+    const paint = () => {
+      slides.forEach((slide, index) => slide.classList.toggle("is-active", index === active));
+      dots.forEach((dot, index) => dot.classList.toggle("is-active", index === active));
+    };
+    window.skboyGroupTimer = window.setInterval(() => {
+      active = (active + 1) % slides.length;
+      paint();
+    }, 3200);
   }
 
   function renderChats(data) {
@@ -306,10 +347,16 @@
     if (!layer || layer.dataset.ready === "1") return;
     layer.dataset.ready = "1";
     const count = window.matchMedia("(max-width: 620px)").matches ? 34 : 62;
+    const origin = document.querySelector(".hero-media video, .hero-media");
+    const rect = origin ? origin.getBoundingClientRect() : null;
+    const left = rect ? rect.left : 0;
+    const width = rect ? rect.width : window.innerWidth;
+    const top = rect ? rect.top + rect.height * .22 : -18;
     for (let i = 0; i < count; i += 1) {
       const grain = document.createElement("span");
       grain.className = "salt-grain";
-      grain.style.setProperty("--x", Math.round(Math.random() * 100) + "vw");
+      grain.style.setProperty("--x", Math.round(left + Math.random() * width) + "px");
+      grain.style.setProperty("--start-y", Math.round(top + Math.random() * 110) + "px");
       grain.style.setProperty("--size", (2 + Math.random() * 4).toFixed(1) + "px");
       grain.style.setProperty("--opacity", (0.28 + Math.random() * 0.5).toFixed(2));
       grain.style.setProperty("--duration", (7 + Math.random() * 9).toFixed(1) + "s");
