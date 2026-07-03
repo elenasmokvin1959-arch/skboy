@@ -124,7 +124,7 @@
       method: "POST",
       headers: { "Content-Type": "application/json", "X-Admin-Password": password },
       body: JSON.stringify(data)
-    }).then(response => response.ok).catch(() => true);
+    }).then(response => response.ok).catch(() => false);
   }
 
   async function loadServerData() {

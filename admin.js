@@ -5,7 +5,7 @@
   const loginPanel = document.getElementById("loginPanel");
   const adminPanel = document.getElementById("adminPanel");
   const loginNotice = document.getElementById("loginNotice");
-  let adminPassword = sessionStorage.getItem("skboyAdminPassword") || "";
+  let adminPassword = "";
 
   function isAuthed() {
     return sessionStorage.getItem("skboyAdminAuthed") === "1";
@@ -23,7 +23,6 @@
     const ok = await checkPassword(password);
     if (ok) {
       adminPassword = password;
-      sessionStorage.setItem("skboyAdminPassword", password);
       sessionStorage.setItem("skboyAdminAuthed", "1");
       showAdmin();
       return;
@@ -44,7 +43,13 @@
   }
 
   async function saveAndRender(passwordOverride) {
-    await store.saveData(data, passwordOverride || adminPassword);
+    const ok = await store.saveData(data, passwordOverride || adminPassword);
+    if (!ok) {
+      alert("Не получилось сохранить. Войдите заново или проверьте пароль/деплой.");
+      sessionStorage.removeItem("skboyAdminAuthed");
+      adminPassword = "";
+      return;
+    }
     renderAll();
   }
 
@@ -304,7 +309,6 @@
 
   document.getElementById("logoutBtn").addEventListener("click", () => {
     sessionStorage.removeItem("skboyAdminAuthed");
-    sessionStorage.removeItem("skboyAdminPassword");
     localStorage.removeItem(store.OWNER_KEY);
     location.href = "index.html";
   });
@@ -414,7 +418,7 @@
         if (ok) showAdmin();
         else {
           sessionStorage.removeItem("skboyAdminAuthed");
-          sessionStorage.removeItem("skboyAdminPassword");
+          adminPassword = "";
         }
       });
     }
