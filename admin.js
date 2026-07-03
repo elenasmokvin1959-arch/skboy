@@ -5,6 +5,7 @@
   const loginPanel = document.getElementById("loginPanel");
   const adminPanel = document.getElementById("adminPanel");
   const loginNotice = document.getElementById("loginNotice");
+  let adminPassword = sessionStorage.getItem("skboyAdminPassword") || "";
 
   function isAuthed() {
     return sessionStorage.getItem("skboyAdminAuthed") === "1";
@@ -17,9 +18,12 @@
     renderAll();
   }
 
-  function tryLogin() {
+  async function tryLogin() {
     const password = document.getElementById("adminPassword").value;
-    if (password === data.password) {
+    const ok = await checkPassword(password);
+    if (ok) {
+      adminPassword = password;
+      sessionStorage.setItem("skboyAdminPassword", password);
       sessionStorage.setItem("skboyAdminAuthed", "1");
       showAdmin();
       return;
@@ -27,8 +31,20 @@
     loginNotice.textContent = "Неверный пароль.";
   }
 
+  async function checkPassword(password) {
+    try {
+      const response = await fetch("/api/login", {
+        method: "POST",
+        headers: { "X-Admin-Password": password }
+      });
+      return response.ok;
+    } catch (error) {
+      return false;
+    }
+  }
+
   async function saveAndRender(passwordOverride) {
-    await store.saveData(data, passwordOverride || data.password);
+    await store.saveData(data, passwordOverride || adminPassword);
     renderAll();
   }
 
@@ -158,6 +174,8 @@
     document.getElementById("heroPrimaryUrlInput").value = data.hero.primaryUrl || "https://tut.contact/skboy";
     document.getElementById("heroSecondaryTextInput").value = data.hero.secondaryText || "Мальчик на dnestra.cc";
     document.getElementById("heroSecondaryUrlInput").value = data.hero.secondaryUrl || "https://t.me/boy_dnestra_bot";
+    document.getElementById("heroTertiaryTextInput").value = data.hero.tertiaryText || "Мальчик на Фениксе";
+    document.getElementById("heroTertiaryUrlInput").value = data.hero.tertiaryUrl || "#";
   }
 
   function renderSiteText() {
@@ -254,7 +272,9 @@
       primaryText: document.getElementById("heroPrimaryTextInput").value || "Вечный бот",
       primaryUrl: document.getElementById("heroPrimaryUrlInput").value || "https://tut.contact/skboy",
       secondaryText: document.getElementById("heroSecondaryTextInput").value || "Мальчик на dnestra.cc",
-      secondaryUrl: document.getElementById("heroSecondaryUrlInput").value || "https://t.me/boy_dnestra_bot"
+      secondaryUrl: document.getElementById("heroSecondaryUrlInput").value || "https://t.me/boy_dnestra_bot",
+      tertiaryText: document.getElementById("heroTertiaryTextInput").value || "Мальчик на Фениксе",
+      tertiaryUrl: document.getElementById("heroTertiaryUrlInput").value || "#"
     };
     saveAndRender();
   });
@@ -282,17 +302,9 @@
     saveAndRender();
   });
 
-  document.getElementById("savePassword").addEventListener("click", () => {
-    const value = document.getElementById("newPassword").value.trim();
-    if (value.length < 4) return;
-    const oldPassword = data.password;
-    data.password = value;
-    document.getElementById("newPassword").value = "";
-    saveAndRender(oldPassword);
-  });
-
   document.getElementById("logoutBtn").addEventListener("click", () => {
     sessionStorage.removeItem("skboyAdminAuthed");
+    sessionStorage.removeItem("skboyAdminPassword");
     localStorage.removeItem(store.OWNER_KEY);
     location.href = "index.html";
   });
@@ -397,6 +409,14 @@
 
   store.loadServerData().then(changed => {
     if (changed) data = store.loadData();
-    if (isAuthed()) showAdmin();
+    if (isAuthed() && adminPassword) {
+      checkPassword(adminPassword).then(ok => {
+        if (ok) showAdmin();
+        else {
+          sessionStorage.removeItem("skboyAdminAuthed");
+          sessionStorage.removeItem("skboyAdminPassword");
+        }
+      });
+    }
   });
 })();

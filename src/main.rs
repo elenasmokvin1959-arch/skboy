@@ -6,6 +6,7 @@ use std::net::{TcpListener, TcpStream};
 use std::path::{Path, PathBuf};
 
 const DATA_FILE: &str = "data.json";
+const BLOCKED_PASSWORD: &str = "skboy228";
 
 fn main() -> std::io::Result<()> {
     let port = env::var("PORT").unwrap_or_else(|_| "10000".to_string());
@@ -31,6 +32,13 @@ fn handle_client(mut stream: TcpStream) {
     let body = request.split("\r\n\r\n").nth(1).unwrap_or("");
 
     match (method, path.split('?').next().unwrap_or(path)) {
+        ("POST", "/api/login") => {
+            if check_admin_password(&request) {
+                send_json(&mut stream, "200 OK", json!({"ok": true}));
+            } else {
+                send_json(&mut stream, "401 Unauthorized", json!({"ok": false}));
+            }
+        }
         ("GET", "/api/data") => send_json(&mut stream, "200 OK", load_data()),
         ("POST", "/api/data") => save_site_data(&mut stream, &request, body),
         ("POST", "/api/review") => save_review(&mut stream, body),
@@ -83,10 +91,15 @@ fn save_site_data(stream: &mut TcpStream, request: &str, body: &str) {
     }
 
     match serde_json::from_str::<Value>(body) {
-        Ok(value) => match write_data(&value) {
+        Ok(mut value) => {
+            if let Some(root) = value.as_object_mut() {
+                root.remove("password");
+            }
+            match write_data(&value) {
             Ok(_) => send_json(stream, "200 OK", json!({"ok": true})),
             Err(_) => send_json(stream, "500 Internal Server Error", json!({"ok": false})),
-        },
+            }
+        }
         Err(_) => send_json(stream, "400 Bad Request", json!({"ok": false, "error": "bad json"})),
     }
 }
@@ -116,7 +129,7 @@ fn save_review(stream: &mut TcpStream, body: &str) {
 }
 
 fn check_admin_password(request: &str) -> bool {
-    let expected = env::var("ADMIN_PASSWORD").unwrap_or_else(|_| "skboy228".to_string());
+    let expected = env::var("ADMIN_PASSWORD").ok();
     let provided = request.lines().find_map(|line| {
         let Some((name, value)) = line.split_once(':') else {
             return None;
@@ -132,14 +145,13 @@ fn check_admin_password(request: &str) -> bool {
         return false;
     };
 
-    if provided == expected {
-        return true;
+    if provided == BLOCKED_PASSWORD {
+        return false;
     }
 
-    load_data()
-        .get("password")
-        .and_then(Value::as_str)
-        .map(|stored| stored == provided)
+    expected
+        .filter(|value| !value.trim().is_empty() && value != BLOCKED_PASSWORD)
+        .map(|value| provided == value)
         .unwrap_or(false)
 }
 

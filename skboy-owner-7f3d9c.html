@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Солёный Мальчик | Админ панель</title>
-  <link rel="stylesheet" href="styles.css?v=4">
+  <link rel="stylesheet" href="styles.css?v=6">
 </head>
 <body class="admin-body">
   <main class="admin-layout">
@@ -12,7 +12,7 @@
       <div class="panel">
         <p class="eyebrow">владелец</p>
         <h1>Вход в админ панель</h1>
-        <p class="muted">Стандартный пароль: <strong>skboy228</strong>. После входа его можно сменить.</p>
+        <p class="muted">Вход только для владельца.</p>
         <label>
           <span>Пароль</span>
           <input id="adminPassword" type="password" placeholder="Введите пароль">
@@ -25,7 +25,7 @@
 
     <section class="admin-panel is-hidden" id="adminPanel">
       <aside class="admin-sidebar">
-        <a class="brand" href="index.html?owner=1">
+        <a class="brand" href="index.html">
           <span class="brand-mark"><img src="avatar.jpg" alt=""></span>
           <span><strong>Солёный Мальчик</strong><small>admin</small></span>
         </a>
@@ -64,6 +64,8 @@
             <label><span>Ссылка первой кнопки</span><input id="heroPrimaryUrlInput" type="text"></label>
             <label><span>Текст второй кнопки</span><input id="heroSecondaryTextInput" type="text"></label>
             <label><span>Ссылка второй кнопки</span><input id="heroSecondaryUrlInput" type="text"></label>
+            <label><span>Текст третьей кнопки</span><input id="heroTertiaryTextInput" type="text"></label>
+            <label><span>Ссылка третьей кнопки</span><input id="heroTertiaryUrlInput" type="text"></label>
             <button class="btn primary" id="saveHero" type="button">Сохранить главную</button>
           </div>
         </section>
@@ -108,17 +110,15 @@
         <section class="admin-tab" id="tab-settings">
           <div class="admin-head"><div><p class="eyebrow">доступ</p><h1>Настройки</h1></div></div>
           <div class="panel">
-            <label><span>Новый пароль</span><input id="newPassword" type="text" placeholder="Новый пароль"></label>
-            <button class="btn primary" id="savePassword" type="button">Сменить пароль</button>
             <button class="btn danger" id="logoutBtn" type="button">Выйти</button>
-            <p class="form-note">Кнопка админки показывается после входа или при открытии сайта через <strong>index.html?owner=1</strong>.</p>
+            <p class="form-note">Адрес этой панели не показывается на публичных страницах сайта.</p>
           </div>
         </section>
       </div>
     </section>
   </main>
 
-  <script src="app.js?v=4"></script>
-  <script src="admin.js?v=4"></script>
+  <script src="app.js?v=6"></script>
+  <script src="admin.js?v=6"></script>
 </body>
 </html>

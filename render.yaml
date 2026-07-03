@@ -7,4 +7,4 @@ services:
     startCommand: ./target/release/skboy-site
     envVars:
       - key: ADMIN_PASSWORD
-        value: skboy228
+        sync: false

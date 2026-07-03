@@ -1,7 +1,6 @@
 (function () {
   const STORAGE_KEY = "skboySiteData";
   const OWNER_KEY = "skboyOwnerMode";
-  const DEFAULT_PASSWORD = "skboy228";
 
   function cryptoId() {
     if (window.crypto && crypto.randomUUID) return crypto.randomUUID();
@@ -9,7 +8,6 @@
   }
 
   const defaults = {
-    password: DEFAULT_PASSWORD,
     news: {
       enabled: true,
       title: "Мальчик снова в строю",
@@ -24,7 +22,9 @@
       primaryText: "Вечный бот",
       primaryUrl: "https://tut.contact/skboy",
       secondaryText: "Мальчик на dnestra.cc",
-      secondaryUrl: "https://t.me/boy_dnestra_bot"
+      secondaryUrl: "https://t.me/boy_dnestra_bot",
+      tertiaryText: "Мальчик на Фениксе",
+      tertiaryUrl: "#"
     },
     siteText: {
       linksEyebrow: "основное",
@@ -69,7 +69,6 @@
   function mergeData(saved) {
     if (!saved || typeof saved !== "object") return clone(defaults);
     return {
-      password: saved.password || DEFAULT_PASSWORD,
       news: { ...defaults.news, ...(saved.news || {}) },
       hero: { ...defaults.hero, ...(saved.hero || {}) },
       siteText: { ...defaults.siteText, ...(saved.siteText || {}) },
@@ -104,6 +103,7 @@
 
   function saveData(data, password) {
     data.seedVersion = Math.max(Number(data.seedVersion || 0), defaults.seedVersion);
+    delete data.password;
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
     } catch (error) {
@@ -176,6 +176,7 @@
     const heroVideo = document.getElementById("heroVideo");
     const primaryBtn = document.getElementById("heroPrimaryBtn");
     const secondaryBtn = document.getElementById("heroSecondaryBtn");
+    const tertiaryBtn = document.getElementById("heroTertiaryBtn");
     if (eyebrow) eyebrow.textContent = hero.eyebrow;
     if (title) title.textContent = hero.title;
     if (description) description.textContent = hero.description;
@@ -188,6 +189,10 @@
     if (secondaryBtn) {
       secondaryBtn.textContent = hero.secondaryText || defaults.hero.secondaryText;
       secondaryBtn.href = normalizeUrl(hero.secondaryUrl || defaults.hero.secondaryUrl);
+    }
+    if (tertiaryBtn) {
+      tertiaryBtn.textContent = hero.tertiaryText || defaults.hero.tertiaryText;
+      tertiaryBtn.href = normalizeUrl(hero.tertiaryUrl || defaults.hero.tertiaryUrl);
     }
   }
 
@@ -370,13 +375,6 @@
     document.getElementById("acceptNews").addEventListener("click", close);
   }
 
-  function setupOwnerLink() {
-    const params = new URLSearchParams(location.search);
-    if (params.get("owner") === "1") localStorage.setItem(OWNER_KEY, "1");
-    const link = document.getElementById("adminLink");
-    if (link && localStorage.getItem(OWNER_KEY) === "1") link.classList.remove("is-hidden");
-  }
-
   function setupSalt() {
     const layer = document.getElementById("saltLayer");
     if (!layer || layer.dataset.ready === "1") return;
@@ -428,7 +426,6 @@
     renderChats(data);
     renderReviews(data);
     setupNews(data);
-    setupOwnerLink();
     setupSalt();
     setupScrollReveal();
   }
@@ -440,12 +437,11 @@
     setupStars();
     setupReviewForm(() => renderReviewsList(loadData()));
     renderReviewsList(data);
-    setupOwnerLink();
     setupSalt();
     setupScrollReveal();
   }
 
-  window.SkboyStore = { STORAGE_KEY, OWNER_KEY, DEFAULT_PASSWORD, cryptoId, loadData, saveData, loadServerData, submitReview, escapeHtml, formatDate, normalizeUrl };
+  window.SkboyStore = { STORAGE_KEY, OWNER_KEY, cryptoId, loadData, saveData, loadServerData, submitReview, escapeHtml, formatDate, normalizeUrl };
 
   setupSalt();
   if (document.getElementById("cardGrid")) {
