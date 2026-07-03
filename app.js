@@ -51,7 +51,8 @@
       { id: cryptoId(), title: "Оператор", hint: "@BOYsalty", url: "https://t.me/BOYsalty" },
       { id: cryptoId(), title: "Работа", hint: "@BOYsalty", url: "https://t.me/BOYsalty" },
       { id: cryptoId(), title: "Реклама", hint: "@BOY_rekl", url: "https://t.me/BOY_rekl" },
-      { id: cryptoId(), title: "Вечный бот", hint: "tut.contact/skboy", url: "https://tut.contact/skboy" }
+      { id: cryptoId(), title: "Вечный бот", hint: "tut.contact/skboy", url: "https://tut.contact/skboy" },
+      { id: cryptoId(), title: "Мы на Фениксе", hint: "ссылка в админке", url: "#" }
     ],
     reviews: [
       { id: cryptoId(), login: "@salt_user", text: "Всё быстро, ссылка всегда под рукой.", createdAt: new Date(Date.now() - 5400000).toISOString(), approved: true, rating: 5 },
@@ -59,7 +60,7 @@
       { id: cryptoId(), login: "@forum_md", text: "Оператор ответил ровно и без лишней суеты.", createdAt: new Date(Date.now() - 183900000).toISOString(), approved: true, rating: 4 },
       { id: cryptoId(), login: "@blackbook", text: "Нормальная визитка, всё видно сразу.", createdAt: new Date(Date.now() - 291300000).toISOString(), approved: true, rating: 5 }
     ],
-    seedVersion: 2
+    seedVersion: 3
   };
 
   function clone(value) {
@@ -74,7 +75,7 @@
       siteText: { ...defaults.siteText, ...(saved.siteText || {}) },
       cards: normalizeCards(saved),
       groups: Array.isArray(saved.groups) ? saved.groups : clone(defaults.groups),
-      chats: Array.isArray(saved.chats) ? saved.chats : clone(defaults.chats),
+      chats: normalizeChats(saved),
       reviews: Array.isArray(saved.reviews) ? saved.reviews.map(review => ({ ...review, rating: Number(review.rating || 5) })) : clone(defaults.reviews),
       seedVersion: Math.max(Number(saved.seedVersion || 0), defaults.seedVersion)
     };
@@ -99,6 +100,15 @@
       });
     }
     return cards;
+  }
+
+  function normalizeChats(saved) {
+    if (!Array.isArray(saved.chats)) return clone(defaults.chats);
+    const chats = saved.chats.map(chat => ({ ...chat }));
+    if (!chats.some(chat => chat.title === "Мы на Фениксе")) {
+      chats.push({ id: cryptoId(), title: "Мы на Фениксе", hint: "ссылка в админке", url: "#" });
+    }
+    return chats;
   }
 
   function saveData(data, password) {
