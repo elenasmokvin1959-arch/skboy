@@ -7,6 +7,13 @@
   const loginNotice = document.getElementById("loginNotice");
   let adminPassword = "";
 
+  store.loadServerData().then(changed => {
+    if (changed) {
+      data = store.loadData();
+      if (isAuthed()) renderAll();
+    }
+  });
+
   function isAuthed() {
     return sessionStorage.getItem("skboyAdminAuthed") === "1";
   }

@@ -83,7 +83,8 @@
 
   function loadData() {
     try {
-      return mergeData(JSON.parse(localStorage.getItem(STORAGE_KEY)));
+      const cached = localStorage.getItem(STORAGE_KEY);
+      return cached ? mergeData(JSON.parse(cached)) : clone(defaults);
     } catch (error) {
       return clone(defaults);
     }
@@ -134,6 +135,7 @@
       const value = await response.json();
       if (!value || !Object.keys(value).length) return false;
       localStorage.setItem(STORAGE_KEY, JSON.stringify(mergeData(value)));
+      localStorage.removeItem(OWNER_KEY);
       return true;
     } catch (error) {
       return false;

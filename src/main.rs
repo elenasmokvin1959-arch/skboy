@@ -9,7 +9,6 @@ use std::time::{Duration, SystemTime, UNIX_EPOCH};
 
 const DATA_FILE: &str = "data.json";
 const ADMIN_FILE: &str = "owner-panel.html";
-const BLOCKED_PASSWORD: &str = "skboy228";
 const MAX_REQUEST_BYTES: usize = 4 * 1024 * 1024;
 const MAX_REVIEW_TEXT: usize = 700;
 const LOGIN_WINDOW: Duration = Duration::from_secs(15 * 60);
@@ -190,18 +189,15 @@ fn check_admin_password(request: &str) -> bool {
         return false;
     };
 
-    if provided == BLOCKED_PASSWORD {
-        return false;
-    }
-
     expected
-        .filter(|value| !value.trim().is_empty() && value != BLOCKED_PASSWORD)
+        .filter(|value| value.trim().len() >= 16)
         .map(|value| provided == value)
         .unwrap_or(false)
 }
 
 fn load_data() -> Value {
-    fs::read_to_string(DATA_FILE)
+    let path = env::var("DATA_FILE").unwrap_or_else(|_| DATA_FILE.to_string());
+    fs::read_to_string(path)
         .ok()
         .and_then(|text| serde_json::from_str(&text).ok())
         .unwrap_or_else(|| json!({}))
@@ -217,7 +213,11 @@ fn public_data(mut value: Value) -> Value {
 fn write_data(value: &Value) -> std::io::Result<()> {
     let bytes = serde_json::to_vec_pretty(value)
         .map_err(|err| std::io::Error::new(std::io::ErrorKind::Other, err))?;
-    fs::write(DATA_FILE, bytes)
+    let path = env::var("DATA_FILE").unwrap_or_else(|_| DATA_FILE.to_string());
+    if let Some(parent) = Path::new(&path).parent() {
+        fs::create_dir_all(parent)?;
+    }
+    fs::write(path, bytes)
 }
 
 fn serve_file(stream: &mut TcpStream, path: &str) {
@@ -227,7 +227,7 @@ fn serve_file(stream: &mut TcpStream, path: &str) {
         .map(|value| value.trim().trim_start_matches('/').to_string())
         .filter(|value| !value.is_empty() && !value.contains("..") && !value.contains('\\'));
     let is_admin = admin_path.as_deref() == Some(clean_path.as_str());
-    let file_path = if is_admin {
+    let file_path = if is_admin || clean_path == "admin.html" {
         PathBuf::from(ADMIN_FILE)
     } else if clean_path == ADMIN_FILE {
         PathBuf::from("__not_found__")
@@ -238,7 +238,7 @@ fn serve_file(stream: &mut TcpStream, path: &str) {
         Ok(body) => ("200 OK", body, content_type(&file_path)),
         Err(_) => ("404 Not Found", b"Not found".to_vec(), "text/plain; charset=utf-8"),
     };
-    let cache = if is_admin || content_type.starts_with("text/html") {
+    let cache = if is_admin || clean_path == "admin.html" || content_type.starts_with("text/html") {
         "no-store"
     } else {
         "public, max-age=300"

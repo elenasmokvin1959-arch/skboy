@@ -5,8 +5,14 @@ services:
     plan: free
     buildCommand: cargo build --release
     startCommand: ./target/release/skboy-site
+    disk:
+      name: skboy-data
+      mountPath: /var/data
+      sizeGB: 1
     envVars:
       - key: ADMIN_PASSWORD
         sync: false
       - key: ADMIN_PATH
         sync: false
+      - key: DATA_FILE
+        value: /var/data/data.json
