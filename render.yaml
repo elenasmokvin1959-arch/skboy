@@ -2,7 +2,7 @@ services:
   - type: web
     name: skboy
     env: rust
-    plan: free
+    plan: starter
     buildCommand: cargo build --release
     startCommand: ./target/release/skboy-site
     disk:
